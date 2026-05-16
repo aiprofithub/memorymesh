@@ -1,228 +1,39 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MemoryMesh — Safe memory for AI agents</title>
-    <meta name="description" content="MemoryMesh is a model-agnostic memory layer for AI agents, copilots, and AI-native apps. REST API, TypeScript SDK, MCP-ready, and built for safe remembering." />
-    <meta property="og:title" content="MemoryMesh — Make AI agents remember safely" />
-    <meta property="og:description" content="A model-agnostic memory layer for persistent AI agents. REST API. TypeScript SDK. MCP-ready. 1,000 free memories planned." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://memorymesh.aiprofithub.ai" />
-    <meta name="theme-color" content="#00C96A" />
-    <link rel="icon" type="image/svg+xml" href="./aiprofithub-icon.svg" />
-    <link rel="shortcut icon" href="./aiprofithub-icon.svg" />
-    <style>
-      :root {
-        --primary: #00c96a;
-        --primary-hot: #00f08a;
-        --track: #a7f3d0;
-        --accent: #34d399;
-        --bg: #000000;
-        --panel: rgba(6, 10, 8, 0.82);
-        --panel-strong: rgba(3, 6, 5, 0.94);
-        --text: #f0fff6;
-        --muted: #c6f5dc;
-        --line: rgba(167, 243, 208, 0.16);
-        --shadow: 0 34px 110px rgba(0, 201, 106, 0.15);
-        --radius: 28px;
-      }
-      * { box-sizing: border-box; }
-      html { scroll-behavior: smooth; }
-      body {
-        margin: 0;
-        color: var(--text);
-        background:
-          radial-gradient(circle at 72% 10%, rgba(0, 201, 106, 0.18), transparent 29rem),
-          radial-gradient(circle at 10% 74%, rgba(52, 211, 153, 0.08), transparent 24rem),
-          linear-gradient(180deg, #000000 0%, #000000 100%);
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        line-height: 1.5;
-        overflow-x: hidden;
-      }
-      a { color: inherit; text-decoration: none; }
-      .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
-      .nav { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(18px); background: rgba(0, 0, 0, 0.76); border-bottom: 1px solid var(--line); }
-      .nav-inner { display: flex; align-items: center; justify-content: space-between; min-height: 76px; }
-      .brand { display: inline-flex; align-items: center; gap: 12px; font-weight: 850; letter-spacing: -0.03em; }
-      .brand-logo { width: 38px; height: 38px; display: block; border-radius: 12px; box-shadow: 0 0 28px rgba(0, 201, 106, 0.32); flex: 0 0 auto; }
-      .nav-links { display: flex; align-items: center; gap: 22px; color: rgba(240, 255, 246, 0.76); font-size: 14px; }
-      .nav-links a:hover { color: var(--text); }
-      .button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 20px; border-radius: 999px; border: 1px solid transparent; font-weight: 800; transition: transform 180ms ease, border-color 180ms ease, background 180ms ease; }
-      .button:hover { transform: translateY(-1px); }
-      .button-primary { background: var(--primary); color: #02150b; box-shadow: 0 18px 44px rgba(0, 201, 106, 0.28); }
-      .button-secondary { border-color: var(--line); background: rgba(6, 10, 8, 0.78); color: var(--text); }
-      .hero { position: relative; padding: 92px 0 76px; overflow: hidden; }
-      .hero-grid { display: grid; grid-template-columns: minmax(0, 0.96fr) minmax(430px, 1.04fr); gap: 62px; align-items: center; }
-      .eyebrow { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 22px; padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; color: var(--track); background: rgba(6, 10, 8, 0.78); font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-      .pulse { width: 8px; height: 8px; border-radius: 999px; background: var(--primary); box-shadow: 0 0 0 8px rgba(0, 201, 106, 0.12); }
-      h1 { margin: 0; max-width: 720px; font-size: clamp(50px, 6.6vw, 84px); line-height: 0.94; letter-spacing: -0.075em; }
-      .gradient-text { color: transparent; background: linear-gradient(135deg, #ffffff 0%, var(--track) 52%, var(--primary) 100%); -webkit-background-clip: text; background-clip: text; }
-      .hero-copy { max-width: 650px; margin: 28px 0 0; color: var(--muted); font-size: 19px; }
-      .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
-      .proof-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 34px; max-width: 660px; }
-      .proof { padding: 16px; border: 1px solid var(--line); border-radius: 20px; background: rgba(6, 10, 8, 0.72); }
-      .proof strong { display: block; font-size: 20px; color: var(--text); }
-      .proof span { color: rgba(198, 245, 220, 0.72); font-size: 13px; }
-      .mesh-visual { position: relative; min-height: 570px; display: grid; grid-template-rows: auto auto; align-content: center; gap: 26px; isolation: isolate; }
-      .memory-orb { position: absolute; z-index: 0; top: 92px; left: 96px; width: 260px; height: 260px; border-radius: 70px; display: grid; place-items: center; background: linear-gradient(145deg, rgba(6, 10, 8, 0.78), rgba(0, 0, 0, 0.70)); border: 1px solid rgba(167, 243, 208, 0.16); box-shadow: var(--shadow); opacity: 0.54; }
-      .memory-orb::before { content: ""; position: absolute; inset: 46px; border-radius: 50%; background: radial-gradient(circle, rgba(0, 201, 106, 0.28), rgba(0, 201, 106, 0.04)); }
-      .memory-glyph { position: relative; width: 92px; height: 112px; }
-      .memory-glyph span { position: absolute; display: block; border-radius: 999px; background: var(--track); }
-      .memory-glyph span:nth-child(1) { left: 42px; top: 0; width: 10px; height: 112px; }
-      .memory-glyph span:nth-child(2) { left: 0; top: 22px; width: 92px; height: 10px; background: var(--primary); transform: rotate(-14deg); }
-      .memory-glyph span:nth-child(3) { left: 0; bottom: 22px; width: 92px; height: 10px; background: var(--primary); transform: rotate(14deg); }
-      .memory-glyph span:nth-child(4) { left: 14px; top: 51px; width: 64px; height: 10px; background: var(--accent); }
-      .console-card, .steps-card { position: relative; z-index: 2; border: 1px solid var(--line); box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35); backdrop-filter: blur(14px); }
-      .console-card { justify-self: end; width: min(430px, 100%); padding: 22px; border-radius: var(--radius); background: rgba(5, 10, 8, 0.92); }
-      .console-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-      .status { display: inline-flex; align-items: center; gap: 8px; color: var(--track); font-size: 13px; font-weight: 800; }
-      .terminal { padding: 18px; border-radius: 20px; background: rgba(0, 0, 0, 0.78); border: 1px solid rgba(167, 243, 208, 0.12); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; color: rgba(240, 255, 246, 0.88); overflow: hidden; }
-      .terminal p { margin: 0 0 10px; }
-      .terminal p:last-child { margin-bottom: 0; }
-      .green { color: var(--primary); }
-      .soft { color: rgba(198, 245, 220, 0.66); }
-      .steps-card { justify-self: start; width: min(420px, 100%); padding: 18px; border-radius: 24px; background: rgba(4, 8, 7, 0.94); }
-      .memory-row { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start; padding: 12px 0; border-bottom: 1px solid rgba(167, 243, 208, 0.10); }
-      .memory-row:last-child { border-bottom: 0; }
-      .dot-icon { width: 36px; height: 36px; border-radius: 14px; display: grid; place-items: center; background: rgba(0, 201, 106, 0.14); color: var(--primary); font-weight: 900; }
-      .section { padding: 80px 0; }
-      .section-head { max-width: 760px; margin-bottom: 32px; }
-      .section h2 { margin: 0; font-size: clamp(34px, 4vw, 58px); line-height: 1; letter-spacing: -0.055em; }
-      .section p.lead { margin: 18px 0 0; color: var(--muted); font-size: 18px; }
-      .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-      .card { padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); box-shadow: 0 16px 60px rgba(0, 0, 0, 0.16); }
-      .card h3 { margin: 16px 0 10px; font-size: 20px; }
-      .card p { margin: 0; color: rgba(198, 245, 220, 0.76); }
-      .icon { width: 44px; height: 44px; border-radius: 16px; display: grid; place-items: center; color: #02150b; background: linear-gradient(135deg, var(--primary), var(--accent)); font-weight: 950; }
-      .split { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 24px; align-items: stretch; }
-      .code { margin: 0; overflow: auto; min-height: 100%; padding: 24px; border-radius: var(--radius); background: rgba(0, 0, 0, 0.74); border: 1px solid rgba(167, 243, 208, 0.14); color: rgba(240, 255, 246, 0.88); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; }
-      .pricing { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
-      .price-card { padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(6, 10, 8, 0.76); }
-      .price-card.featured { border-color: rgba(0, 201, 106, 0.58); background: linear-gradient(180deg, rgba(0, 201, 106, 0.14), rgba(4, 8, 7, 0.82)); box-shadow: var(--shadow); }
-      .price { font-size: 34px; font-weight: 900; letter-spacing: -0.05em; }
-      .price small { font-size: 14px; color: rgba(198, 245, 220, 0.72); }
-      ul.clean { list-style: none; padding: 0; margin: 18px 0 0; color: rgba(198, 245, 220, 0.78); }
-      ul.clean li { margin: 10px 0; }
-      ul.clean li::before { content: "✓"; color: var(--primary); font-weight: 900; margin-right: 8px; }
-      .cta { padding: 46px; border: 1px solid rgba(0, 201, 106, 0.32); border-radius: 36px; background: radial-gradient(circle at 84% 20%, rgba(0, 201, 106, 0.18), transparent 24rem), rgba(6, 10, 8, 0.82); box-shadow: var(--shadow); display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
-      .cta h2 { margin: 0; }
-      .cta p { margin: 14px 0 0; color: var(--muted); }
-      footer { padding: 36px 0 60px; color: rgba(198, 245, 220, 0.62); border-top: 1px solid var(--line); }
-      @media (max-width: 980px) {
-        .nav-links { display: none; }
-        .hero-grid, .split, .cta { grid-template-columns: 1fr; }
-        .mesh-visual { min-height: auto; gap: 18px; padding-top: 20px; }
-        .memory-orb { top: 34px; left: 50%; transform: translateX(-50%); opacity: 0.32; }
-        .console-card, .steps-card { justify-self: center; width: min(100%, 470px); }
-        .grid-3, .pricing, .proof-row { grid-template-columns: 1fr; }
-        h1 { font-size: clamp(44px, 13vw, 68px); }
-      }
-      @media (max-width: 560px) {
-        .shell { width: min(100% - 28px, 1180px); }
-        .hero { padding-top: 62px; }
-        .hero-actions { flex-direction: column; }
-        .button { width: 100%; }
-        .console-card, .steps-card { width: 100%; }
-        .terminal { font-size: 12px; }
-        .cta { padding: 28px; }
-      }
-    </style>
-  </head>
-  <body>
-    <header class="nav">
-      <div class="shell nav-inner">
-        <a class="brand" href="#top" aria-label="MemoryMesh home">
-          <img class="brand-logo" src="./aiprofithub-icon.svg" alt="AIProfitHub icon" />
-          <span>MemoryMesh</span>
-        </a>
-        <nav class="nav-links" aria-label="Primary navigation">
-          <a href="#features">Features</a>
-          <a href="#demo">Demo</a>
-          <a href="#pricing">Cloud</a>
-          <a href="https://github.com/aiprofithub/memorymesh">GitHub</a>
-          <a class="button button-primary" href="https://github.com/aiprofithub/memorymesh/issues/new?template=hosted-api-request.yml">Request hosted API</a>
-        </nav>
-      </div>
-    </header>
-    <main id="top">
-      <section class="hero">
-        <div class="shell hero-grid">
-          <div>
-            <div class="eyebrow"><span class="pulse"></span> AIProfitHub Labs · v0.0.1</div>
-            <h1>Make AI agents <span class="gradient-text">remember safely.</span></h1>
-            <p class="hero-copy">MemoryMesh is a model-agnostic memory layer for AI agents, copilots, and AI-native apps. Store, search, and forget memories through REST, TypeScript SDK, and MCP-ready workflows.</p>
-            <div class="hero-actions">
-              <a class="button button-primary" href="https://github.com/aiprofithub/memorymesh">View GitHub repo →</a>
-              <a class="button button-secondary" href="https://github.com/aiprofithub/memorymesh/issues/new?template=hosted-api-request.yml">Join hosted API waitlist</a>
-            </div>
-            <div class="proof-row" aria-label="MemoryMesh proof points">
-              <div class="proof"><strong>1,000</strong><span>free memories planned</span></div>
-              <div class="proof"><strong>REST</strong><span>simple API scaffold</span></div>
-              <div class="proof"><strong>MCP</strong><span>agent workflow ready</span></div>
-            </div>
-          </div>
-          <div class="mesh-visual" aria-hidden="true">
-            <div class="memory-orb"><div class="memory-glyph"><span></span><span></span><span></span><span></span></div></div>
-            <div class="console-card">
-              <div class="console-top"><strong>Memory API</strong><span class="status"><span class="pulse"></span> running</span></div>
-              <div class="terminal">
-                <p><span class="soft">POST</span> <span class="green">/v1/memories</span></p>
-                <p>{ type: "preference" }</p>
-                <p>{ content: "User prefers concise Thai steps." }</p>
-                <p><span class="green">201</span> mem_pB2rpgYfN_vx</p>
-              </div>
-            </div>
-            <div class="steps-card">
-              <div class="memory-row"><div class="dot-icon">1</div><div><strong>Remember</strong><br /><span class="soft">Preferences, decisions, tasks, handoffs.</span></div></div>
-              <div class="memory-row"><div class="dot-icon">2</div><div><strong>Search</strong><br /><span class="soft">Recall only the context an agent needs.</span></div></div>
-              <div class="memory-row"><div class="dot-icon">3</div><div><strong>Forget</strong><br /><span class="soft">Deletion and retention are product features.</span></div></div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section class="section" id="features">
-        <div class="shell">
-          <div class="section-head"><h2>A memory control plane, not another chatbot.</h2><p class="lead">Most agents get worse when context disappears or prompts get bloated. MemoryMesh keeps memory explicit, searchable, and portable.</p></div>
-          <div class="grid-3">
-            <article class="card"><div class="icon">R</div><h3>Remember explicitly</h3><p>Store user preferences, decisions, project context, and previous handoffs without silently saving everything.</p></article>
-            <article class="card"><div class="icon">S</div><h3>Search safely</h3><p>Retrieve relevant memory by user, agent, project, scope, or query instead of stuffing raw chat history into every prompt.</p></article>
-            <article class="card"><div class="icon">F</div><h3>Forget by design</h3><p>Build around deletion, retention, export, and memory receipts from day one. Memory should not be a black box.</p></article>
-          </div>
-        </div>
-      </section>
-      <section class="section" id="demo">
-        <div class="shell split">
-          <div class="card"><div class="icon">⚡</div><h2>Local-first v0 demo.</h2><p class="lead">Clone the repo, run the API, create a memory, then search it. No hosted cloud required for testing.</p><ul class="clean"><li>Fastify REST API</li><li>TypeScript SDK scaffold</li><li>MCP server scaffold</li><li>In-memory local store</li></ul></div>
-          <pre class="code"><code>git clone https://github.com/aiprofithub/memorymesh.git
-cd memorymesh
-pnpm install
-pnpm dev
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MemoryMesh by AIProfitHub — Agent memory, AI cost control</title>
+  <meta name="description" content="MemoryMesh is an AIProfitHub Labs experiment showing how agent memory can reduce repeated context, prompt bloat, and hidden AI cost leaks." />
+  <meta property="og:title" content="MemoryMesh — Agent memory experiment by AIProfitHub" />
+  <meta property="og:description" content="AI agents forget context. Repeated context creates token waste. MemoryMesh points builders to AIProfitHub's AI cost control plane." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://memorymesh.aiprofithub.ai" />
+  <meta name="theme-color" content="#00C96A" />
+  <link rel="icon" type="image/svg+xml" href="./aiprofithub-icon.svg" />
+  <link rel="shortcut icon" href="./aiprofithub-icon.svg" />
+  <style>
+    :root{--green:#00c96a;--hot:#00f08a;--track:#a7f3d0;--accent:#34d399;--bg:#000;--text:#f0fff6;--muted:#c6f5dc;--line:rgba(167,243,208,.16);--panel:rgba(6,10,8,.86);--panel2:rgba(3,6,5,.94);--shadow:0 34px 110px rgba(0,201,106,.16);--r:28px}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 75% 12%,rgba(0,201,106,.18),transparent 30rem),radial-gradient(circle at 12% 70%,rgba(52,211,153,.08),transparent 24rem),#000;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5;overflow-x:hidden}a{color:inherit;text-decoration:none}.shell{width:min(1180px,calc(100% - 40px));margin:0 auto}.nav{position:sticky;top:0;z-index:10;background:rgba(0,0,0,.76);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}.nav-inner{min-height:76px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:12px;font-weight:850;letter-spacing:-.03em}.brand-logo{width:38px;height:38px;border-radius:12px;box-shadow:0 0 28px rgba(0,201,106,.32)}.nav-links{display:flex;align-items:center;gap:22px;color:rgba(240,255,246,.76);font-size:14px}.nav-links a:hover{color:var(--text)}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border-radius:999px;border:1px solid transparent;font-weight:850}.btn:hover{transform:translateY(-1px)}.btn-primary{background:var(--green);color:#02150b;box-shadow:0 18px 44px rgba(0,201,106,.28)}.btn-secondary{background:rgba(6,10,8,.78);border-color:var(--line)}.hero{padding:92px 0 76px}.hero-grid{display:grid;grid-template-columns:minmax(0,.96fr) minmax(430px,1.04fr);gap:62px;align-items:center}.eyebrow{display:inline-flex;gap:10px;align-items:center;margin-bottom:22px;padding:9px 13px;border:1px solid var(--line);border-radius:999px;color:var(--track);background:rgba(6,10,8,.78);font-size:13px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}.pulse{width:8px;height:8px;border-radius:999px;background:var(--green);box-shadow:0 0 0 8px rgba(0,201,106,.12)}h1{margin:0;max-width:720px;font-size:clamp(50px,6.6vw,84px);line-height:.94;letter-spacing:-.075em}.grad{color:transparent;background:linear-gradient(135deg,#fff 0%,var(--track) 52%,var(--green) 100%);-webkit-background-clip:text;background-clip:text}.copy{max-width:660px;margin:28px 0 0;color:var(--muted);font-size:19px}.actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}.proof{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:34px;max-width:660px}.proof div{padding:16px;border:1px solid var(--line);border-radius:20px;background:rgba(6,10,8,.72)}.proof strong{display:block;font-size:20px}.proof span{font-size:13px;color:rgba(198,245,220,.72)}.visual{position:relative;min-height:570px;display:grid;grid-template-rows:auto auto;align-content:center;gap:26px;isolation:isolate}.orb{position:absolute;z-index:0;top:92px;left:96px;width:260px;height:260px;border-radius:70px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(6,10,8,.78),rgba(0,0,0,.7));border:1px solid rgba(167,243,208,.16);box-shadow:var(--shadow);opacity:.54}.orb:before{content:"";position:absolute;inset:46px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,106,.28),rgba(0,201,106,.04))}.glyph{position:relative;width:92px;height:112px}.glyph span{position:absolute;display:block;border-radius:999px}.glyph span:nth-child(1){left:42px;top:0;width:10px;height:112px;background:var(--track)}.glyph span:nth-child(2){left:0;top:22px;width:92px;height:10px;background:var(--green);transform:rotate(-14deg)}.glyph span:nth-child(3){left:0;bottom:22px;width:92px;height:10px;background:var(--green);transform:rotate(14deg)}.glyph span:nth-child(4){left:14px;top:51px;width:64px;height:10px;background:var(--accent)}.console,.steps{position:relative;z-index:2;border:1px solid var(--line);box-shadow:0 24px 80px rgba(0,0,0,.35);backdrop-filter:blur(14px)}.console{justify-self:end;width:min(430px,100%);padding:22px;border-radius:var(--r);background:rgba(5,10,8,.92)}.console-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.status{display:inline-flex;align-items:center;gap:8px;color:var(--track);font-size:13px;font-weight:850}.terminal{padding:18px;border-radius:20px;background:rgba(0,0,0,.78);border:1px solid rgba(167,243,208,.12);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:13px;color:rgba(240,255,246,.88)}.terminal p{margin:0 0 10px}.terminal p:last-child{margin-bottom:0}.green{color:var(--green)}.soft{color:rgba(198,245,220,.66)}.steps{justify-self:start;width:min(420px,100%);padding:18px;border-radius:24px;background:rgba(4,8,7,.94)}.row{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid rgba(167,243,208,.1)}.row:last-child{border-bottom:0}.num{width:36px;height:36px;border-radius:14px;display:grid;place-items:center;background:rgba(0,201,106,.14);color:var(--green);font-weight:900}.section{padding:80px 0}.head{max-width:780px;margin-bottom:32px}.section h2{margin:0;font-size:clamp(34px,4vw,58px);line-height:1;letter-spacing:-.055em}.lead{margin:18px 0 0;color:var(--muted);font-size:18px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{padding:24px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);box-shadow:0 16px 60px rgba(0,0,0,.16)}.card h3{margin:16px 0 10px;font-size:20px}.card p{margin:0;color:rgba(198,245,220,.76)}.icon{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#02150b;background:linear-gradient(135deg,var(--green),var(--accent));font-weight:950}.split{display:grid;grid-template-columns:.92fr 1.08fr;gap:24px}.code{margin:0;overflow:auto;padding:24px;border-radius:var(--r);background:rgba(0,0,0,.74);border:1px solid rgba(167,243,208,.14);color:rgba(240,255,246,.88);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:13px}.cta{padding:46px;border:1px solid rgba(0,201,106,.32);border-radius:36px;background:radial-gradient(circle at 84% 20%,rgba(0,201,106,.18),transparent 24rem),rgba(6,10,8,.82);box-shadow:var(--shadow);display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}.cta h2{margin:0}.cta p{margin:14px 0 0;color:var(--muted)}footer{padding:36px 0 60px;color:rgba(198,245,220,.62);border-top:1px solid var(--line)}@media(max-width:980px){.nav-links{display:none}.hero-grid,.split,.cta{grid-template-columns:1fr}.visual{min-height:auto;gap:18px;padding-top:20px}.orb{top:34px;left:50%;transform:translateX(-50%);opacity:.32}.console,.steps{justify-self:center;width:min(100%,470px)}.grid,.proof{grid-template-columns:1fr}h1{font-size:clamp(44px,13vw,68px)}}@media(max-width:560px){.shell{width:min(100% - 28px,1180px)}.hero{padding-top:62px}.actions{flex-direction:column}.btn{width:100%}.terminal{font-size:12px}.cta{padding:28px}}
+  </style>
+</head>
+<body>
+  <header class="nav"><div class="shell nav-inner"><a class="brand" href="#top"><img class="brand-logo" src="./aiprofithub-icon.svg" alt="AIProfitHub icon"><span>MemoryMesh</span></a><nav class="nav-links"><a href="#why">Why</a><a href="#cost">Cost leaks</a><a href="#demo">Demo</a><a href="https://github.com/aiprofithub/memorymesh">GitHub</a><a class="btn btn-primary" href="https://aiprofithub.ai/get-audit">Check AI Cost Leaks</a></nav></div></header>
+  <main id="top">
+    <section class="hero"><div class="shell hero-grid"><div><div class="eyebrow"><span class="pulse"></span> AIProfitHub Labs · Memory bait</div><h1>AI agents remember more. <span class="grad">Your AI costs should not disappear.</span></h1><p class="copy">MemoryMesh is an open-source experiment from AIProfitHub showing how persistent agent memory can reduce repeated prompts, context bloat, and hidden AI spend.</p><div class="actions"><a class="btn btn-primary" href="https://aiprofithub.ai/get-audit">Check AI Cost Leaks →</a><a class="btn btn-secondary" href="https://github.com/aiprofithub/memorymesh">View open-source repo</a><a class="btn btn-secondary" href="https://aiprofithub.ai/">Explore AIProfitHub</a></div><div class="proof"><div><strong>Memory</strong><span>less repeated context</span></div><div><strong>Tokens</strong><span>less prompt bloat</span></div><div><strong>Audit</strong><span>find hidden spend leaks</span></div></div></div><div class="visual"><div class="orb"><div class="glyph"><span></span><span></span><span></span><span></span></div></div><div class="console"><div class="console-top"><strong>Agent context loop</strong><span class="status"><span class="pulse"></span> cost risk</span></div><div class="terminal"><p><span class="soft">agent</span> repeats project context</p><p><span class="soft">prompt</span> grows every session</p><p><span class="soft">tokens</span> rise silently</p><p><span class="green">AIProfitHub</span> finds the leak</p></div></div><div class="steps"><div class="row"><div class="num">1</div><div><strong>Remember</strong><br><span class="soft">Preferences, decisions, tasks, handoffs.</span></div></div><div class="row"><div class="num">2</div><div><strong>Reduce repetition</strong><br><span class="soft">Stop stuffing the same context into prompts.</span></div></div><div class="row"><div class="num">3</div><div><strong>Control spend</strong><br><span class="soft">Audit request cost, model routing, and margin risk.</span></div></div></div></div></div></section>
+    <section class="section" id="why"><div class="shell"><div class="head"><h2>MemoryMesh is the hook. AIProfitHub is the control plane.</h2><p class="lead">This experiment attracts teams building AI agents, then points them to the bigger problem: uncontrolled AI usage, repeated context, expensive prompts, and missing cost attribution.</p></div><div class="grid"><article class="card"><div class="icon">M</div><h3>Agent memory creates signal</h3><p>If agents need memory, they are already running repeated AI workflows worth measuring.</p></article><article class="card"><div class="icon">$</div><h3>Repeated context costs money</h3><p>Long prompts, repeated handoffs, and duplicate requests quietly inflate AI spend.</p></article><article class="card"><div class="icon">A</div><h3>Audit before scaling</h3><p>AIProfitHub helps teams find cost leaks before agents become expensive black boxes.</p></article></div></div></section>
+    <section class="section" id="cost"><div class="shell split"><div class="card"><div class="icon">⚡</div><h2>What this experiment points to</h2><p class="lead">Better memory is not just better UX. It can reduce repeated context, lower token waste, and make AI workflows easier to audit.</p><ul><li>Repeated context = wasted tokens</li><li>Agent memory = lower prompt bloat</li><li>Cost control = AIProfitHub</li><li>Audit first = find leaks before scaling</li></ul></div><pre class="code"><code>MemoryMesh attracts AI agent builders.
 
-# API
-GET  http://localhost:4310/
-POST http://localhost:4310/v1/memories
-GET  http://localhost:4310/v1/memories/search?q=thai</code></pre>
-        </div>
-      </section>
-      <section class="section" id="pricing">
-        <div class="shell">
-          <div class="section-head"><h2>Free for experiments. Paid when memory becomes mission-critical.</h2><p class="lead">The cloud version is not built yet. This page validates demand before we ship hosted endpoints.</p></div>
-          <div class="pricing">
-            <article class="price-card"><h3>Open Source</h3><div class="price">Free</div><ul class="clean"><li>Local API</li><li>SDK scaffold</li><li>MCP scaffold</li><li>Self-hostable</li></ul></article>
-            <article class="price-card featured"><h3>Cloud Free</h3><div class="price">$0 <small>/mo</small></div><ul class="clean"><li>1 hosted project</li><li>1 API key</li><li>1,000 memories</li><li>100 searches/day</li></ul></article>
-            <article class="price-card"><h3>Builder</h3><div class="price">$19 <small>/mo</small></div><ul class="clean"><li>10k memories</li><li>3 agents</li><li>Hosted API</li><li>Basic dashboard</li></ul></article>
-            <article class="price-card"><h3>Team</h3><div class="price">$79 <small>/mo</small></div><ul class="clean"><li>100k memories</li><li>Team workspace</li><li>Audit logs</li><li>MCP cloud sync</li></ul></article>
-          </div>
-        </div>
-      </section>
-      <section class="section">
-        <div class="shell cta">
-          <div><h2>Want hosted memory for your agent?</h2><p>Request early access. If enough builders ask for it, MemoryMesh Cloud Preview ships next.</p></div>
-          <div class="hero-actions"><a class="button button-primary" href="https://github.com/aiprofithub/memorymesh/issues/new?template=hosted-api-request.yml">Request hosted API</a><a class="button button-secondary" href="https://github.com/aiprofithub/memorymesh">Star on GitHub</a></div>
-        </div>
-      </section>
-    </main>
-    <footer><div class="shell"><strong>MemoryMesh</strong> · An AIProfitHub Labs experiment · Built to validate demand before building the hosted cloud.</div></footer>
-  </body>
+AIProfitHub converts them with:
+- AI spend audit
+- cost attribution
+- model routing insights
+- budget leak detection
+- margin risk reporting
+
+Start here:
+https://aiprofithub.ai/get-audit</code></pre></div></section>
+    <section class="section" id="demo"><div class="shell"><div class="cta"><div><h2>Find hidden AI cost leaks before scaling agents.</h2><p>MemoryMesh is a lab experiment. AIProfitHub is where cost intelligence turns into action.</p></div><div class="actions"><a class="btn btn-primary" href="https://aiprofithub.ai/get-audit">Get AI Spend Audit</a><a class="btn btn-secondary" href="https://github.com/aiprofithub/memorymesh">Star the repo</a></div></div></div></section>
+  </main>
+  <footer><div class="shell"><strong>MemoryMesh</strong> · An AIProfitHub Labs experiment · Built as a lead magnet for AIProfitHub's AI Cost Control Plane.</div></footer>
+</body>
 </html>
