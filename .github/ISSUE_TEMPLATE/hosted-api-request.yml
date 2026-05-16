@@ -1,0 +1,51 @@
+name: Hosted API request
+
+description: Request early access to a hosted MemoryMesh endpoint.
+
+title: "Hosted API request: "
+
+labels:
+  - hosted-api
+  - v0
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this if you want a hosted MemoryMesh endpoint for an agent, app, or demo.
+
+  - type: textarea
+    id: project
+    attributes:
+      label: What do you want to connect?
+      placeholder: App, AI agent, workflow, MCP client, support bot, sales bot...
+    validations:
+      required: true
+
+  - type: input
+    id: expected-volume
+    attributes:
+      label: Expected memory volume
+      placeholder: Example: 500 memories/month, 100 searches/day
+
+  - type: dropdown
+    id: timeline
+    attributes:
+      label: When would you test it?
+      options:
+        - This week
+        - This month
+        - Later
+    validations:
+      required: true
+
+  - type: dropdown
+    id: paid
+    attributes:
+      label: Would you pay for production usage if it works?
+      options:
+        - Yes
+        - Maybe
+        - No
+    validations:
+      required: true
