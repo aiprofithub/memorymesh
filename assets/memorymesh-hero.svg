@@ -55,11 +55,11 @@
   <text x="98" y="365" fill="#CFFBE2" font-family="Inter, ui-sans-serif, system-ui" font-size="25">Model-agnostic memory infrastructure for</text>
   <text x="98" y="400" fill="#CFFBE2" font-family="Inter, ui-sans-serif, system-ui" font-size="25">persistent AI agents, copilots, and apps.</text>
   <g transform="translate(96 468)">
-    <rect width="186" height="44" rx="22" fill="#00C96A"/>
-    <text x="26" y="29" fill="#02150B" font-family="Inter, ui-sans-serif, system-ui" font-size="16" font-weight="800">1,000 free memories</text>
+    <rect width="218" height="44" rx="22" fill="#00C96A"/>
+    <text x="25" y="29" fill="#02150B" font-family="Inter, ui-sans-serif, system-ui" font-size="15" font-weight="800">1,000 free memories</text>
   </g>
-  <g transform="translate(300 468)">
-    <rect width="156" height="44" rx="22" fill="#0B1F16" stroke="#A7F3D0" stroke-opacity="0.22"/>
-    <text x="24" y="29" fill="#A7F3D0" font-family="Inter, ui-sans-serif, system-ui" font-size="16" font-weight="700">REST + SDK + MCP</text>
+  <g transform="translate(334 468)">
+    <rect width="168" height="44" rx="22" fill="#0B1F16" stroke="#A7F3D0" stroke-opacity="0.22"/>
+    <text x="23" y="29" fill="#A7F3D0" font-family="Inter, ui-sans-serif, system-ui" font-size="15" font-weight="700">REST + SDK + MCP</text>
   </g>
 </svg>
