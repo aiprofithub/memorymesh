@@ -5,6 +5,24 @@ import { CreateMemorySchema, searchMemories, type MemoryRecord } from "@memoryme
 const app = Fastify({ logger: true });
 const memories: MemoryRecord[] = [];
 
+app.get("/", async () => ({
+  ok: true,
+  service: "memorymesh-api",
+  version: "0.1.0",
+  message: "MemoryMesh API is running.",
+  endpoints: {
+    health: "GET /health",
+    createMemory: "POST /v1/memories",
+    listMemories: "GET /v1/memories",
+    searchMemories: "GET /v1/memories/search?userId=user_123&q=thai",
+    deleteMemory: "DELETE /v1/memories/:id"
+  }
+}));
+
+app.get("/favicon.ico", async (_request, reply) => {
+  return reply.status(204).send();
+});
+
 app.get("/health", async () => ({
   ok: true,
   service: "memorymesh-api",
@@ -32,6 +50,11 @@ app.post("/v1/memories", async (request, reply) => {
   memories.push(memory);
   return reply.status(201).send({ memory });
 });
+
+app.get("/v1/memories", async () => ({
+  results: memories,
+  count: memories.length
+}));
 
 app.get("/v1/memories/search", async (request) => {
   const query = request.query as {
