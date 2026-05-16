@@ -1,0 +1,51 @@
+name: Feedback
+
+description: Tell us how MemoryMesh could be useful for your AI agent workflow.
+
+title: "Feedback: "
+
+labels:
+  - feedback
+  - v0
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing MemoryMesh v0. The goal is to validate demand before building the hosted cloud.
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: What are you building?
+      description: Describe your agent, app, copilot, or workflow.
+      placeholder: Example: A support agent that needs to remember customer preferences and unresolved tickets.
+    validations:
+      required: true
+
+  - type: textarea
+    id: memory-need
+    attributes:
+      label: What should the agent remember?
+      description: List the memories that would be useful.
+      placeholder: Preferences, decisions, tasks, handoffs, account context, project history...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: hosted
+    attributes:
+      label: Would you use a hosted MemoryMesh endpoint?
+      options:
+        - Yes, free tier is enough for testing
+        - Yes, I would consider paying for production
+        - Maybe, depends on features
+        - No, self-host only
+    validations:
+      required: true
+
+  - type: textarea
+    id: missing
+    attributes:
+      label: What is missing for you to try it?
+      placeholder: SDK example, MCP config, local persistence, vector search, dashboard, etc.
