@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MemoryMesh — Safe memory for AI agents</title>
+    <meta
+      name="description"
+      content="MemoryMesh is a model-agnostic memory layer for AI agents, copilots, and AI-native apps. REST API, TypeScript SDK, MCP-ready, and built for safe remembering."
+    />
+    <meta property="og:title" content="MemoryMesh — Make AI agents remember safely" />
+    <meta
+      property="og:description"
+      content="A model-agnostic memory layer for persistent AI agents. REST API. TypeScript SDK. MCP-ready. 1,000 free memories planned."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://memorymesh.aiprofithub.ai" />
+    <meta name="theme-color" content="#00C96A" />
+    <style>
+      :root {
+        --primary: #00c96a;
+        --track: #a7f3d0;
+        --accent: #34d399;
+        --bg: #06120d;
+        --bg-2: #091a12;
+        --panel: rgba(11, 31, 22, 0.78);
+        --panel-2: rgba(7, 18, 14, 0.86);
+        --text: #f0fff6;
+        --muted: #c6f5dc;
+        --soft: rgba(167, 243, 208, 0.16);
+        --line: rgba(167, 243, 208, 0.16);
+        --shadow: 0 30px 100px rgba(0, 201, 106, 0.16);
+        --radius: 28px;
+      }
+
+      * { box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 74% 12%, rgba(0, 201, 106, 0.30), transparent 32rem),
+          radial-gradient(circle at 14% 70%, rgba(52, 211, 153, 0.18), transparent 28rem),
+          linear-gradient(180deg, #06120d 0%, #07130e 48%, #030806 100%);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      .shell {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        backdrop-filter: blur(18px);
+        background: rgba(6, 18, 13, 0.78);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 76px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 850;
+        letter-spacing: -0.03em;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        color: #02150b;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        box-shadow: 0 0 40px rgba(0, 201, 106, 0.44);
+        font-weight: 950;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        color: rgba(240, 255, 246, 0.76);
+        font-size: 14px;
+      }
+
+      .nav-links a:hover { color: var(--text); }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 0 20px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-weight: 800;
+        transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+      }
+
+      .button:hover { transform: translateY(-1px); }
+
+      .button-primary {
+        background: var(--primary);
+        color: #02150b;
+        box-shadow: 0 18px 44px rgba(0, 201, 106, 0.28);
+      }
+
+      .button-secondary {
+        border-color: var(--line);
+        background: rgba(11, 31, 22, 0.72);
+        color: var(--text);
+      }
+
+      .hero {
+        position: relative;
+        padding: 94px 0 80px;
+        overflow: hidden;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.02fr) minmax(390px, 0.98fr);
+        gap: 56px;
+        align-items: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 22px;
+        padding: 9px 13px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--track);
+        background: rgba(11, 31, 22, 0.72);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .pulse {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--primary);
+        box-shadow: 0 0 0 8px rgba(0, 201, 106, 0.12);
+      }
+
+      h1 {
+        margin: 0;
+        max-width: 760px;
+        font-size: clamp(52px, 7vw, 88px);
+        line-height: 0.94;
+        letter-spacing: -0.075em;
+      }
+
+      .gradient-text {
+        color: transparent;
+        background: linear-gradient(135deg, #ffffff 0%, var(--track) 52%, var(--primary) 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+
+      .hero-copy {
+        max-width: 650px;
+        margin: 28px 0 0;
+        color: var(--muted);
+        font-size: 19px;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 34px;
+      }
+
+      .proof-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 34px;
+        max-width: 660px;
+      }
+
+      .proof {
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: rgba(11, 31, 22, 0.58);
+      }
+
+      .proof strong {
+        display: block;
+        font-size: 20px;
+        color: var(--text);
+      }
+
+      .proof span {
+        color: rgba(198, 245, 220, 0.72);
+        font-size: 13px;
+      }
+
+      .visual {
+        position: relative;
+        min-height: 520px;
+      }
+
+      .memory-orb {
+        position: absolute;
+        inset: 50px auto auto 94px;
+        width: 260px;
+        height: 260px;
+        border-radius: 70px;
+        background: linear-gradient(145deg, rgba(11, 31, 22, 0.96), rgba(6, 18, 13, 0.96));
+        border: 1px solid rgba(167, 243, 208, 0.24);
+        box-shadow: var(--shadow);
+        display: grid;
+        place-items: center;
+      }
+
+      .memory-orb::before {
+        content: "";
+        position: absolute;
+        inset: 46px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0, 201, 106, 0.28), rgba(0, 201, 106, 0.04));
+      }
+
+      .memory-glyph {
+        position: relative;
+        width: 92px;
+        height: 112px;
+      }
+
+      .memory-glyph span {
+        position: absolute;
+        display: block;
+        border-radius: 999px;
+        background: var(--track);
+      }
+
+      .memory-glyph span:nth-child(1) { left: 42px; top: 0; width: 10px; height: 112px; }
+      .memory-glyph span:nth-child(2) { left: 0; top: 22px; width: 92px; height: 10px; background: var(--primary); transform: rotate(-14deg); }
+      .memory-glyph span:nth-child(3) { left: 0; bottom: 22px; width: 92px; height: 10px; background: var(--primary); transform: rotate(14deg); }
+      .memory-glyph span:nth-child(4) { left: 14px; top: 51px; width: 64px; height: 10px; background: var(--accent); }
+
+      .console-card {
+        position: absolute;
+        right: 0;
+        top: 150px;
+        width: 360px;
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(11, 31, 22, 0.82);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+      }
+
+      .console-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--track);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .terminal {
+        padding: 18px;
+        border-radius: 20px;
+        background: rgba(3, 8, 6, 0.72);
+        border: 1px solid rgba(167, 243, 208, 0.12);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 13px;
+        color: rgba(240, 255, 246, 0.86);
+      }
+
+      .terminal p { margin: 0 0 10px; }
+      .terminal p:last-child { margin-bottom: 0; }
+      .green { color: var(--primary); }
+      .soft { color: rgba(198, 245, 220, 0.62); }
+
+      .floating-card {
+        position: absolute;
+        left: 18px;
+        bottom: 28px;
+        width: 330px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(7, 18, 14, 0.86);
+        box-shadow: 0 20px 70px rgba(0, 0, 0, 0.28);
+      }
+
+      .memory-row {
+        display: grid;
+        grid-template-columns: 36px 1fr;
+        gap: 12px;
+        align-items: start;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(167, 243, 208, 0.10);
+      }
+
+      .memory-row:last-child { border-bottom: 0; }
+
+      .dot-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: rgba(0, 201, 106, 0.14);
+        color: var(--primary);
+        font-weight: 900;
+      }
+
+      .section { padding: 80px 0; }
+
+      .section-head {
+        max-width: 760px;
+        margin-bottom: 32px;
+      }
+
+      .section h2 {
+        margin: 0;
+        font-size: clamp(34px, 4vw, 58px);
+        line-height: 1;
+        letter-spacing: -0.055em;
+      }
+
+      .section p.lead {
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+
+      .card {
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: 0 16px 60px rgba(0, 0, 0, 0.16);
+      }
+
+      .card h3 { margin: 16px 0 10px; font-size: 20px; }
+      .card p { margin: 0; color: rgba(198, 245, 220, 0.76); }
+
+      .icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        color: #02150b;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        font-weight: 950;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 24px;
+        align-items: stretch;
+      }
+
+      .code {
+        margin: 0;
+        overflow: auto;
+        min-height: 100%;
+        padding: 24px;
+        border-radius: var(--radius);
+        background: rgba(3, 8, 6, 0.74);
+        border: 1px solid rgba(167, 243, 208, 0.14);
+        color: rgba(240, 255, 246, 0.88);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 13px;
+      }
+
+      .pricing {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+      }
+
+      .price-card {
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(11, 31, 22, 0.66);
+      }
+
+      .price-card.featured {
+        border-color: rgba(0, 201, 106, 0.58);
+        background: linear-gradient(180deg, rgba(0, 201, 106, 0.14), rgba(11, 31, 22, 0.72));
+        box-shadow: var(--shadow);
+      }
+
+      .price { font-size: 34px; font-weight: 900; letter-spacing: -0.05em; }
+      .price small { font-size: 14px; color: rgba(198, 245, 220, 0.72); }
+
+      ul.clean {
+        list-style: none;
+        padding: 0;
+        margin: 18px 0 0;
+        color: rgba(198, 245, 220, 0.78);
+      }
+
+      ul.clean li { margin: 10px 0; }
+      ul.clean li::before { content: "✓"; color: var(--primary); font-weight: 900; margin-right: 8px; }
+
+      .cta {
+        padding: 46px;
+        border: 1px solid rgba(0, 201, 106, 0.32);
+        border-radius: 36px;
+        background:
+          radial-gradient(circle at 84% 20%, rgba(0, 201, 106, 0.28), transparent 24rem),
+          rgba(11, 31, 22, 0.78);
+        box-shadow: var(--shadow);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 24px;
+        align-items: center;
+      }
+
+      .cta h2 { margin: 0; }
+      .cta p { margin: 14px 0 0; color: var(--muted); }
+
+      footer {
+        padding: 36px 0 60px;
+        color: rgba(198, 245, 220, 0.62);
+        border-top: 1px solid var(--line);
+      }
+
+      @media (max-width: 920px) {
+        .nav-links { display: none; }
+        .hero-grid, .split, .cta { grid-template-columns: 1fr; }
+        .visual { min-height: 560px; }
+        .console-card { right: 0; top: 172px; }
+        .memory-orb { left: 24px; }
+        .grid-3, .pricing, .proof-row { grid-template-columns: 1fr; }
+        h1 { font-size: clamp(44px, 13vw, 68px); }
+      }
+
+      @media (max-width: 560px) {
+        .shell { width: min(100% - 28px, 1180px); }
+        .hero { padding-top: 62px; }
+        .hero-actions { flex-direction: column; }
+        .button { width: 100%; }
+        .visual { min-height: 620px; transform: scale(0.92); transform-origin: top center; }
+        .console-card { width: 330px; }
+        .floating-card { width: 315px; }
+        .cta { padding: 28px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="shell nav-inner">
+        <a class="brand" href="#top" aria-label="MemoryMesh home">
+          <span class="brand-mark">M</span>
+          <span>MemoryMesh</span>
+        </a>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#features">Features</a>
+          <a href="#demo">Demo</a>
+          <a href="#pricing">Cloud</a>
+          <a href="https://github.com/aiprofithub/memorymesh">GitHub</a>
+          <a class="button button-primary" href="https://github.com/aiprofithub/memorymesh/issues/new?template=hosted-api-request.yml">Request hosted API</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="shell hero-grid">
+          <div>
+            <div class="eyebrow"><span class="pulse"></span> AIProfitHub Labs · v0.0.1</div>
+            <h1>Make AI agents <span class="gradient-text">remember safely.</span></h1>
+            <p class="hero-copy">
+              MemoryMesh is a model-agnostic memory layer for AI agents, copilots, and AI-native apps. Store, search, and forget memories through REST, TypeScript SDK, and MCP-ready workflows.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="https://github.com/aiprofithub/memorymesh">View GitHub repo →</a>
+              <a class="button button-secondary" href="https://github.com/aiprofithub/memorymesh/issues/new?template=hosted-api-request.yml">Join hosted API waitlist</a>
+            </div>
+            <div class="proof-row" aria-label="MemoryMesh proof points">
+              <div class="proof"><strong>1,000</strong><span>free memories planned</span></div>
+              <div class="proof"><strong>REST</strong><span>simple API scaffold</span></div>
+              <div class="proof"><strong>MCP</strong><span>agent workflow ready</span></div>
+            </div>
+          </div>
+
+          <div class="visual" aria-hidden="true">
+            <div class="memory-orb">
+              <div class="memory-glyph"><span></span><span></span><span></span><span></span></div>
+            </div>
+            <div class="console-card">
+              <div class="console-top">
+                <strong>Memory API</strong>
+                <span class="status"><span class="pulse"></span> running</span>
+              </div>
+              <div class="terminal">
+                <p><span class="soft">POST</span> <span class="green">/v1/memories</span></p>
+                <p>{ type: "preference" }</p>
+                <p>{ content: "User prefers concise Thai steps." }</p>
+                <p><span class="green">201</span> mem_pB2rpgYfN_vx</p>
+              </div>
+            </div>
+            <div class="floating-card">
+              <div class="memory-row"><div class="dot-icon">1</div><div><strong>Remember</strong><br /><span class="soft">Preferences, decisions, tasks, handoffs.</span></div></div>
+              <div class="memory-row"><div class="dot-icon">2</div><div><strong>Search</strong><br /><span class="soft">Recall only the context an agent needs.</span></div></div>
+              <div class="memory-row"><div class="dot-icon">3</div><div><strong>Forget</strong><br /><span class="soft">Deletion and retention are product features.</span></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="features">
+        <div class="shell">
+          <div class="section-head">
+            <h2>A memory control plane, not another chatbot.</h2>
+            <p class="lead">Most agents get worse when context disappears or prompts get bloated. MemoryMesh keeps memory explicit, searchable, and portable.</p>
+          </div>
+          <div class="grid-3">
+            <article class="card"><div class="icon">R</div><h3>Remember explicitly</h3><p>Store user preferences, decisions, project context, and previous handoffs without silently saving everything.</p></article>
+            <article class="card"><div class="icon">S</div><h3>Search safely</h3><p>Retrieve relevant memory by user, agent, project, scope, or query instead of stuffing raw chat history into every prompt.</p></article>
+            <article class="card"><div class="icon">F</div><h3>Forget by design</h3><p>Build around deletion, retention, export, and memory receipts from day one. Memory should not be a black box.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="demo">
+        <div class="shell split">
+          <div class="card">
+            <div class="icon">⚡</div>
+            <h2>Local-first v0 demo.</h2>
+            <p class="lead">Clone the repo, run the API, create a memory, then search it. No hosted cloud required for testing.</p>
+            <ul class="clean">
+              <li>Fastify REST API</li>
+              <li>TypeScript SDK scaffold</li>
+              <li>MCP server scaffold</li>
+              <li>In-memory local store</li>
+            </ul>
+          </div>
+          <pre class="code"><code>git clone https://github.com/aiprofithub/memorymesh.git
+cd memorymesh
+pnpm install
+pnpm dev
+
+# API
+GET  http://localhost:4310/
+POST http://localhost:4310/v1/memories
+GET  http://localhost:4310/v1/memories/search?q=thai</code></pre>
+        </div>
+      </section>
+
+      <section class="section" id="pricing">
+        <div class="shell">
+          <div class="section-head">
+            <h2>Free for experiments. Paid when memory becomes mission-critical.</h2>
+            <p class="lead">The cloud version is not built yet. This page validates demand before we ship hosted endpoints.</p>
+          </div>
+          <div class="pricing">
+            <article class="price-card"><h3>Open Source</h3><div class="price">Free</div><ul class="clean"><li>Local API</li><li>SDK scaffold</li><li>MCP scaffold</li><li>Self-hostable</li></ul></article>
+            <article class="price-card featured"><h3>Cloud Free</h3><div class="price">$0 <small>/mo</small></div><ul class="clean"><li>1 hosted project</li><li>1 API key</li><li>1,000 memories</li><li>100 searches/day</li></ul></article>
+            <article class="price-card"><h3>Builder</h3><div class="price">$19 <small>/mo</small></div><ul class="clean"><li>10k memories</li><li>3 agents</li><li>Hosted API</li><li>Basic dashboard</li></ul></article>
+            <article class="price-card"><h3>Team</h3><div class="price">$79 <small>/mo</small></div><ul class="clean"><li>100k memories</li><li>Team workspace</li><li>Audit logs</li><li>MCP cloud sync</li></ul></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="shell cta">
+          <div>
+            <h2>Want hosted memory for your agent?</h2>
+            <p>Request early access. If enough builders ask for it, MemoryMesh Cloud Preview ships next.</p>
+          </div>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://github.com/aiprofithub/memorymesh/issues/new?template=hosted-api-request.yml">Request hosted API</a>
+            <a class="button button-secondary" href="https://github.com/aiprofithub/memorymesh">Star on GitHub</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="shell">
+        <strong>MemoryMesh</strong> · An AIProfitHub Labs experiment · Built to validate demand before building the hosted cloud.
+      </div>
+    </footer>
+  </body>
+</html>
